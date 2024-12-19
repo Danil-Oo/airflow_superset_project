@@ -3,7 +3,7 @@
 ### 1.1 Устанавливаем Docker
 ```bash
 sudo apt-get update
-sudo apt-get install docker.io # устанавливаем сам докер
+sudo apt-get install docker.io
 ```
 ### 1.2 Создаем сеть для будующих двух контейнеров
 ```bash

@@ -151,3 +151,98 @@ ssh -L  8080:localhost:8080 <user_name>@<ip-address>
 ```bash
 docker logs <имя контейнера>
 ```
+# Инструкция по развертыванию Airflow 
+## 1. Установка miniconda
+### 1.1 Загружаем последнюю версию Miniconda, открыв терминал и выполнив команду
+```bash
+curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+```
+### 1.2 Устанавливаем миниконду 
+```bash
+bash ~/Miniconda3-latest-Linux-x86_64.sh
+```
+### 1.3 Обновляем терминал 
+```bash
+source ~/.bashrc
+```
+### 1.4 Деактивиурем окружение ```base```
+```bash
+conda deactivate
+```
+### 1.5 Создаем окружение  ```airflow_env```
+```bash
+conda create airflow_env`
+```
+### 1.6 Активируем окружение  ```airflow_env```
+```bash
+conda activate airflow_env
+```
+## 2. Установка Airflow
+### 2.1 Исполняем команду, чтобы Airflow смог обнаружить домашнюю директорию 
+```bash
+export AIRFLOW_HOME=~/airflow
+```
+### 2.2 Устанавливаем Airflow
+* Активируем окружение airflow_env
+* Выполняем команду
+```bash
+AIRFLOW_VERSION=2.10.4
+
+# Extract the version of Python you have installed. If you're currently using a Python version that is not supported by Airflow, you may want to set this manually.
+# See above for supported versions.
+PYTHON_VERSION="$(python -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')"
+
+CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt"
+# For example this would install 2.10.4 with python 3.8: https://raw.githubusercontent.com/apache/airflow/constraints-2.10.4/constraints-3.8.txt
+
+pip install "apache-airflow==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}"
+```
+### 2.3 Запускаем графический интерфейс Airflow
+* Устанавливаем библиотеку ```pandas```, она понадобится для исполния одного из DAG-файлов
+```bash
+pip install pandas
+```
+* Открываем "физически" папку ```airflow``` в vscode на сервере
+* Выполняем команду
+```bash
+airflow db migrate
+```
+* Создаем пользователя в Airflow
+```bash
+airflow users create \
+    --username admin \
+    --firstname <имя> \
+    --lastname <фамилия> \
+    --role Admin \
+    --email <почта>
+```
+* Переходим в папку ```airflow``` через терминал
+```bash
+cd airflow/
+```
+* Прокидываем порт, чтобы открыть графический интерфейс Airflow в браузере
+```bash
+airflow webserver --port 8080
+```
+* В терминале смотрим логи, контролируем процесс
+### 2.4 Запускаем scheduler
+* Открываем новый терминал в vscode
+* Если активировано окружение ```base```, выполняем команду
+```bash
+conda deactivate
+```
+* Активируем окружение ```airflow_env```
+* Переходим в терминале в папку ```airflow```
+* Выполняем команду
+```bash
+airflow scheduler
+```
+* Смотрим логи, валидируем себя
+### 2.5 Подготовка директории и работа с Airflow 
+* Внутри папки ```airflow``` создаем пустой файл с названием ```credit_clients.csv```
+* Создаем папку ```dags``` внутри папки ```airflow``` на сервере, в папку ```dags``` вставляем DAG-файлы из данного репозитория
+* Обновляем файлы сочетанием клавиш ```ctrl+s```
+* Открываем графический интерфейс Airflow, ждем пока наши DAG-файлы появятся в списке DAGs (может занять несколько минут)
+* Открываем каждый DAG-файл по отедельности и запускаем его кнопкой в правом верхнем углу ```Trigger DAG```
+## 3. Логи
+* Не забывайте проверять логи, как в терминале, так и непосредственно в интерфейсе Airflow для каждого DAG'а и для каждой задачи, это спасет ваши нервы!

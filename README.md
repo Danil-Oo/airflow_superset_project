@@ -90,7 +90,7 @@ SELECT * FROM credit_clients LIMIT 10;
 ### 1.4 Запуск контейнера с Superset
 * Запускаем контейнер 
 ```bash
-docker run --rm -d \
+docker run -d \
     -p 8088:8088 \
     -e "SUPERSET_SECRET_KEY=$(openssl rand -base64 42)" \
     --name superset \

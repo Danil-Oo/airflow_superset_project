@@ -126,6 +126,10 @@ docker network connect <имя вашей сети> <имя контейнера
 ```
 ## 2. Настраиваем Superset
 ### 2.1 Подготовка Superset
+* Перезапускаем докер
+```bash
+docker restart superset
+```
 * Прописываем в локальном терминале
 ```bash
 ssh -L  8080:localhost:8080 <user_name>@<ip-address>

@@ -132,9 +132,9 @@ docker restart superset
 ```
 * Прописываем в локальном терминале
 ```bash
-ssh -L  8080:localhost:8080 <user_name>@<ip-address>
+ssh -L  8088:localhost:8088 <user_name>@<ip-address>
 ```
-* В браузере переходим по адресу: http://localhost:8080/login/
+* В браузере переходим по адресу: http://localhost:8088/login/
 * Username
 `<Логин от Superset>`
 * Password
